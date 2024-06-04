@@ -4,7 +4,7 @@ const pg = require('pg');
 
 let config = {
     user: 'postgres',
-    database: 'online_market',
+    database: 'patisserie',
     password: 'mihaja123',
     port: 5432
 };
@@ -38,7 +38,9 @@ function choix(role) {
         let action_employe = +prompt("=>");
         
         if (action_employe == 1) {
-            //voir la liste des gateaux
+            client.query('select * from gateau', (err, res) => {
+                console.log(res("rows"));
+            });
         }
         else if (action_employe == 2) {
             //voir le nombre de client dans le mois
