@@ -90,8 +90,9 @@ pool.connect(function (err, client, done) {
                         console.log("Erreur dans la suppression");
                     } else {
                         console.log('Suppression réussie');
-                        done(); } 
-                    });
+                        done();
+                    }
+                });
             }
             else if (action_employe == 5) {
                 console.log("Merci, a tres bientot");
@@ -111,7 +112,18 @@ pool.connect(function (err, client, done) {
             let action_client = prompt("=>");
 
             if (action_client == 1) {
-                //voir la liste des gateaux
+                client.query('SELECT nom_gateau, prix, categorie FROM gateau', (err, res) => {
+                    if (err) {
+                        console.error(err);
+                        done();
+                    } else {
+                        console.log('Liste des gateaux :');
+                        res.rows.forEach(row => {
+                            console.log(`Nom: ${row.nom_gateau}, Prix: ${row.prix}, Categorie: ${row.categorie}`);
+                        });
+                        done();
+                    }
+                });
             }
             else if (action_client == 2) {
                 //faire une commande
