@@ -31,24 +31,21 @@ pool.connect(function (err, client, done) {
         if (role == 1) {
             console.log("Que souhaitez-vous faire?");
             console.log("1 - Voir la liste des gateaux");
-            console.log("2 - Voir le nombre de client dans le mois");
-            console.log("3 - Ajouter un nouveau gateau");
-            console.log("4 - Enlever un gateau");
-            console.log("5 - Quitter");
+            console.log("2 - Ajouter un nouveau gateau");
+            console.log("3 - Enlever un gateau");
+            console.log("4 - Quitter");
             let action_employe = +prompt("=>");
 
             if (action_employe == 1) {
                 client.query('SELECT * FROM gateau', (err, res) => {
                     console.log('Liste des gateaux :');
                     console.log(res.rows);
-                    done();
+                    console.log();
+                    console.log();
+                    choix(role);
                 });
             }
-
             else if (action_employe == 2) {
-                //voir le nombre de client dans le mois
-            }
-            else if (action_employe == 3) {
                 let id_gateau = +prompt("Insérer id :");
                 let nom_gateau = prompt("Insérer nom :");
                 let description = prompt("Insérer la description :");
@@ -69,39 +66,86 @@ pool.connect(function (err, client, done) {
                         choix(role);
                     } else {
                         console.log('Insertion réussie');
-                        done();
+                        console.log();
+                        console.log();
+                        choix(role);
                     }
                 });
             }
 
-            else if (action_employe == 4) {
-                //enlever un gateau
+            else if (action_employe == 3) {
+                let id_gateau = +prompt("Insérer l'id du gateau à supprimer :");
+
+                const query = `
+                DELETE FROM gateau WHERE id_gateau = $1
+            `;
+
+                client.query(query, [id_gateau], (err, res) => {
+                    if (err) {
+                        console.log();
+                        console.log("Erreur dans la suppression");
+                        console.log();
+                        console.log();
+                        choix(role);
+                    } else {
+                        console.log();
+                        console.log('Suppression réussie');
+                        console.log();
+                        console.log();
+                        choix(role);
+                    }
+                });
             }
-            else if (action_employe == 5) {
+            else if (action_employe == 4) {
                 console.log("Merci, a tres bientot");
                 done();
             }
             else {
                 console.log("Reessayer");
-                choix(role)
+                choix(role);
             }
         }
         else if (role == 2) {
             console.log("Que souhaitez-vous faire?");
             console.log("1 - Voir la liste des gateaux");   //nom, prix, categorie
-            console.log("2 - Faire une commande");
-            console.log("3 - Voir la description d'un gateau");
+            console.log("2 - Voir la description d'un gateau");
+            console.log("3 - Faire une commande");
             console.log("4 - Quitter");
             let action_client = prompt("=>");
 
             if (action_client == 1) {
-                //voir la liste des gateaux
+                client.query('SELECT nom_gateau, categorie, prix FROM gateau', (err, res) => {
+                    console.log('Liste des gateaux :');
+                    console.log(res.rows);
+                    console.log();
+                    console.log();
+                    choix(role);
+                });
             }
             else if (action_client == 2) {
-                //faire une commande
+                let id_gateau = +prompt("Insérer l'id du gateau qui vous intéresse :");
+                
+                const query = `
+                    select description from gateau where id_gateau = $1
+                `;
+
+                client.query(query, [id_gateau], (err, res) => {
+                    if (err) {
+                        console.error('Erreur lors de la récupération de la description du gâteau');
+                        console.log();
+                        console.log();
+                        choix(role);
+                    } else {
+                        console.log();
+                        console.log('Description du gateau :', res.rows[0].description);
+                    }
+                    console.log();
+                    console.log();
+                    choix(role);
+                });
             }
             else if (action_client == 3) {
-                //voir la description d'un gateau
+                //////////////
             }
             else if (action_client == 4) {
                 console.log("Merci d'avoir utilise notre service");
@@ -113,6 +157,7 @@ pool.connect(function (err, client, done) {
             }
         }
         else {
+            console.log();
             console.log("Qui etes-vous?");
             result();
         }
@@ -122,7 +167,6 @@ pool.connect(function (err, client, done) {
         let role = fonction();
         choix(role);
     }
-
 
     //appel des fontions
     welcome();
