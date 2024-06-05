@@ -84,8 +84,6 @@ pool.connect(function (err, client, done) {
                     if (err) {
                         console.log();
                         console.log("Erreur dans la suppression");
-                        console.log();
-                        console.log();
                         choix(role);
                     } else {
                         console.log();
@@ -97,6 +95,7 @@ pool.connect(function (err, client, done) {
                 });
             }
             else if (action_employe == 4) {
+                console.log();
                 console.log("Merci, a tres bientot");
                 done();
             }
@@ -124,7 +123,7 @@ pool.connect(function (err, client, done) {
             }
             else if (action_client == 2) {
                 let id_gateau = +prompt("Insérer l'id du gateau qui vous intéresse :");
-                
+
                 const query = `
                     select description from gateau where id_gateau = $1
                 `;
@@ -132,8 +131,6 @@ pool.connect(function (err, client, done) {
                 client.query(query, [id_gateau], (err, res) => {
                     if (err) {
                         console.error('Erreur lors de la récupération de la description du gâteau');
-                        console.log();
-                        console.log();
                         choix(role);
                     } else {
                         console.log();
@@ -145,9 +142,30 @@ pool.connect(function (err, client, done) {
                 });
             }
             else if (action_client == 3) {
-                //////////////
+                let id_gateau = +prompt("Insérer l'id du gateau à commander :");
+                let id_commande = +prompt("Insérer l'id de votre commande :")
+                let quantite = +prompt("Insérer la quantite :");
+
+                const insertContenirQuery = `
+            INSERT INTO contenir (id_gateau, id_commande, quantite)
+            VALUES ($1, $2, $3)
+        `;
+
+                client.query(insertContenirQuery, [id_gateau, id_commande, quantite], (err, res) => {
+                    if (err) {
+                        console.log("Erreur dans l'insertion du gateau dans la commande");
+                        choix(role);
+                    } else {
+                        console.log();
+                        console.log('Gateau ajouté à la commande avec succès');
+                        console.log();
+                        console.log();
+                        choix(role);
+                    }
+                });
             }
             else if (action_client == 4) {
+                console.log();
                 console.log("Merci d'avoir utilise notre service");
                 done();
             }
