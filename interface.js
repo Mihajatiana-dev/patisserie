@@ -84,7 +84,14 @@ pool.connect(function (err, client, done) {
             }
 
             else if (action_employe == 4) {
-                //enlever un gateau
+                let id_gateau = +prompt("Insérer l'id du gateau à enlever :");
+                client.query('DELETE FROM gateau WHERE id_gateau = $1', [id_gateau], (err, res) => {
+                    if (err) {
+                        console.log("Erreur dans la suppression");
+                    } else {
+                        console.log('Suppression réussie');
+                        done(); } 
+                    });
             }
             else if (action_employe == 5) {
                 console.log("Merci, a tres bientot");
