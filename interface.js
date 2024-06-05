@@ -46,7 +46,16 @@ pool.connect(function (err, client, done) {
             }
 
             else if (action_employe == 2) {
-                //voir le nombre de client dans le mois
+                client.query('select COUNT(*) AS nombre_de_clients FROM commande WHERE date_commande < current_date', (err, res) => {
+                    if (err) {
+                        console.error("error");
+                        done();
+                    } else {
+                        console.log('le nombre de client de ce mois est :');
+                        console.log(res.rows[0]);
+                        done();
+                    }
+                })
             }
             else if (action_employe == 3) {
                 let id_gateau = +prompt("Insérer id :");
@@ -124,7 +133,7 @@ pool.connect(function (err, client, done) {
     }
 
 
-    //appel des fontions
+    //appel de tout les fontions
     welcome();
     result();
 });
