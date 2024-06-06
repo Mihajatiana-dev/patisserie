@@ -14,14 +14,17 @@ let pool = new pg.Pool(config);
 pool.connect(function (err, client, done) {
 
     function welcome() {
-        console.log("----------Bienvenu dans la patisserie TYMN----------");
+        console.log("--------BIENVENU DANS LA PATISSERIE TYMN----------");
         console.log();
     }
 
     function fonction() {
         console.log("Quel est votre role dans cette patisserie?");
-        console.log("1 - employe");
-        console.log("2 - client");
+        console.log();
+        console.log('*------------- ROLE ------------*');
+        console.log('*        (1)  employe           *');
+        console.log('*        (2)  client            *');
+        console.log('*-------------------------------*');
         let role = +prompt("=> ");
         console.log();
         return role;
@@ -30,16 +33,27 @@ pool.connect(function (err, client, done) {
     function choix(role) {
         if (role == 1) {
             console.log("Que souhaitez-vous faire?");
-            console.log("1 - Voir la liste des gateaux");
-            console.log("2 - Ajouter un nouveau gateau");
-            console.log("3 - Enlever un gateau");
-            console.log("4 - Quitter");
+            console.log();
+            console.log('*---------------- ACTION ----------------*');
+            console.log('*      (1)  Voir la liste des gateaux    *');
+            console.log('*      (2)  Ajouter un nouveau gateau    *');
+            console.log('*      (3)  Enlever un gateau            *');
+            console.log('*      (4)  Quitter                      *');
+            console.log('*----------------------------------------*');
             let action_employe = +prompt("=>");
 
             if (action_employe == 1) {
-                client.query('SELECT * FROM gateau', (err, res) => {
+                client.query('SELECT * from gateau', (err, res) => {
                     console.log('Liste des gateaux :');
-                    console.log(res.rows);
+                    res.rows.forEach(row => {
+                        console.log(`${row.id_gateau}`);
+                        console.log(`nom du gateau: ${row.nom_gateau}`);
+                        console.log(`categorie: ${row.categorie}`);
+                        console.log(`prix: ${row.prix}`);
+                        console.log(`id de l'employe qui l'a prepare: ${row.id_employe}`);
+                        console.log(`id de la promotion: ${row.id_promotion}`);
+                        console.log();
+                    });
                     console.log();
                     console.log();
                     choix(role);
@@ -106,16 +120,23 @@ pool.connect(function (err, client, done) {
         }
         else if (role == 2) {
             console.log("Que souhaitez-vous faire?");
-            console.log("1 - Voir la liste des gateaux");   //nom, prix, categorie
-            console.log("2 - Voir la description d'un gateau");
-            console.log("3 - Faire une commande");
-            console.log("4 - Quitter");
+            console.log();
+            console.log('*------------------ ACTION ------------------*');
+            console.log('*    (1)  Voir la liste des gateaux          *');
+            console.log("*    (2)  Voir la description d'un gateau    *");
+            console.log('*    (3)  Faire une commande                 *');
+            console.log('*    (4)  Quitter                            *');
+            console.log('*--------------------------------------------*');
             let action_client = prompt("=>");
 
             if (action_client == 1) {
                 client.query('SELECT nom_gateau, categorie, prix FROM gateau', (err, res) => {
                     console.log('Liste des gateaux :');
-                    console.log(res.rows);
+                    res.rows.forEach(row => {
+                        console.log(`nom du gateau: ${row.nom_gateau}`);
+                        console.log(`prix: ${row.prix}`);
+                        console.log();
+                    });
                     console.log();
                     console.log();
                     choix(role);
