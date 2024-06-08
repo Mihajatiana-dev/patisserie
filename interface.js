@@ -73,7 +73,6 @@ pool.connect(function (err, client, done) {
                     } else {
                         console.log('Insertion réussie');
                         console.log();
-                        
                         console.log();
                         choix(role);
                     }
@@ -104,7 +103,8 @@ pool.connect(function (err, client, done) {
             else if (action_employe == 4) {
                 console.log();
                 console.log("Merci, a tres bientot");
-                done();
+                client.end();
+                console.log();
             }
             else {
                 console.log("Reessayer");
@@ -118,18 +118,16 @@ pool.connect(function (err, client, done) {
             console.log('*    (1)  Voir la liste des gateaux          *');
             console.log("*    (2)  Voir la description d'un gateau    *");
             console.log('*    (3)  Faire une commande                 *');
-            console.log('*    (4)  Quitter                            *');
+            console.log('*    (4)  Rechercher un gateau(par nom)      *');
+            console.log('*    (5)  Rechercher un gateau(par type)     *');
+            console.log('*    (6)  Quitter                            *');
             console.log('*--------------------------------------------*');
             let action_client = prompt("=>");
 
             if (action_client == 1) {
                 client.query('SELECT nom_gateau, categorie, prix FROM gateau', (err, res) => {
                     console.log('Liste des gateaux :');
-                    res.rows.forEach(row => {
-                        console.log(`nom du gateau: ${row.nom_gateau}`);
-                        console.log(`prix: ${row.prix}`);
-                        console.log();
-                    });
+                    console.table(res.rows);
                     console.log();
                     console.log();
                     choix(role);
@@ -179,9 +177,54 @@ pool.connect(function (err, client, done) {
                 });
             }
             else if (action_client == 4) {
+                let nom_gateau = prompt("Quel gateau recherchez-vous :");
+
+                const query = `
+            SELECT nom_gateau, description, categorie, prix FROM gateau where nom_gateau ilike $1
+        `;
+                const insert = `%${nom_gateau}%`;
+
+
+                client.query(query, [insert], (err, res) => {
+                    if (err) {
+                        console.log("Erreur dans la recherche du gateau");
+                        choix(role);
+                    } else {
+                        console.log();
+                        console.log("Resultats de votre recherche : ");
+                        console.table(res.rows);
+                        console.log();
+                        choix(role);
+                    }
+                });
+            }
+            else if (action_client == 5) {
+                let categorie = prompt("Quel type de gateau recherchez-vous :");
+
+                const query = `
+            SELECT nom_gateau, description, prix FROM gateau where categorie ilike $1
+        `;
+                const insert = `%${categorie}%`;
+
+
+                client.query(query, [insert], (err, res) => {
+                    if (err) {
+                        console.log("Erreur dans la recherche du gateau");
+                        choix(role);
+                    } else {
+                        console.log();
+                        console.log("Resultats de votre recherche : ");
+                        console.table(res.rows);
+                        console.log();
+                        choix(role);
+                    }
+                });
+            }
+            else if (action_client == 6) {
                 console.log();
                 console.log("Merci d'avoir utilise notre service");
-                done();
+                client.end();
+                console.log();
             }
             else {
                 console.log("Reessayer");
