@@ -45,16 +45,8 @@ pool.connect(function (err, client, done) {
             if (action_employe == 1) {
                 client.query('SELECT * from gateau', (err, res) => {
                     console.log('Liste des gateaux :');
-                    res.rows.forEach(row => {
-                        console.log(`${row.id_gateau}`);
-                        console.log(`nom du gateau: ${row.nom_gateau}`);
-                        console.log(`categorie: ${row.categorie}`);
-                        console.log(`prix: ${row.prix}`);
-                        console.log(`id de l'employe qui l'a prepare: ${row.id_employe}`);
-                        console.log(`id de la promotion: ${row.id_promotion}`);
-                        console.log();
-                    });
-                    console.log();
+                    console.table(res.rows);
+
                     console.log();
                     choix(role);
                 });
@@ -81,6 +73,7 @@ pool.connect(function (err, client, done) {
                     } else {
                         console.log('Insertion réussie');
                         console.log();
+                        
                         console.log();
                         choix(role);
                     }
