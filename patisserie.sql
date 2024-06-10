@@ -147,3 +147,60 @@ INSERT INTO contenir (id_gateau, id_commande, quantite) VALUES
         (8, 8, 3),
         (9, 9, 2),
         (10, 10, 1);
+INSERT INTO contenir (id_gateau, id_commande, quantite) VALUES
+(9, 1, 6);
+---recherche des commandes des clients liste gateau avec quantité et date de commande---
+SELECT c.nom_client, c.prenom_client, g.nom_gateau, g.categorie, contenir.quantite, commande.date_commande FROM commande
+LEFT JOIN client c ON commande.id_commande=c.id_client
+LEFT JOIN contenir ON commande.id_commande=contenir.id_commande
+LEFT JOIN gateau g ON contenir.id_gateau=g.id_gateau;
+
+--sommme commande par client par g------
+SELECT client.nom_client, client.prenom_client, gateau.nom_gateau, contenir.quantite, commande.date_commande, 
+(SELECT SUM(contenir.quantite * gateau.prix) 
+FROM gateau
+WHERE contenir.id_gateau=gateau.id_gateau) 
+AS totale_de_la_commande 
+FROM commande
+LEFT JOIN client ON commande.id_commande=client.id_client
+LEFT JOIN contenir ON commande.id_commande=contenir.id_commande
+LEFT JOIN gateau ON contenir.id_gateau=gateau.id_gateau;
+
+---commande avec somme total par client------
+SELECT client.nom_client, 
+client.prenom_client, 
+SUM(contenir.quantite * gateau.prix) 
+AS total_des_commandes
+FROM commande
+LEFT JOIN client ON commande.id_client = client.id_client
+LEFT JOIN contenir ON commande.id_commande = contenir.id_commande
+LEFT JOIN gateau ON contenir.id_gateau = gateau.id_gateau
+GROUP BY client.nom_client, client.prenom_client;
+
+
+---commande avec somme total par client en liste de ommande par produit acheté-----
+SELECT client.nom_client, client.prenom_client, gateau.nom_gateau, contenir.quantite, commande.date_commande, 
+SUM(contenir.quantite * gateau.prix) 
+AS totale_de_la_commande 
+FROM commande
+LEFT JOIN client ON commande.id_commande=client.id_client
+LEFT JOIN contenir ON commande.id_commande=contenir.id_commande
+LEFT JOIN gateau ON contenir.id_gateau=gateau.id_gateau 
+WHERE client.id_client=1
+GROUP BY client.nom_client, 
+client.prenom_client, 
+gateau.nom_gateau, 
+contenir.quantite, 
+commande.date_commande;
+
+
+-----somme chiffre d'affaire-----
+SELECT COUNT(*) AS total_client FROM client, 
+
+SELECT 
+SUM(contenir.quantite * gateau.prix) 
+AS total_des_commandes
+FROM commande
+LEFT JOIN client ON commande.id_client = client.id_client
+LEFT JOIN contenir ON commande.id_commande = contenir.id_commande
+LEFT JOIN gateau ON contenir.id_gateau = gateau.id_gateau;
