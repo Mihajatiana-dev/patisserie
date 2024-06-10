@@ -195,7 +195,7 @@ commande.date_commande;
 
 
 -----somme chiffre d'affaire-----
-SELECT COUNT(*) AS total_client FROM client, 
+
 
 SELECT 
 SUM(contenir.quantite * gateau.prix) 

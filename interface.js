@@ -5,7 +5,7 @@ const pg = require('pg');
 let config = {
     user: 'postgres',
     database: 'patisserie',
-    password: 'mihaja123',
+    password: '100398',  //need to change this psswrd if you log with you pg
     port: 5432
 };
 
@@ -38,7 +38,9 @@ pool.connect(function (err, client, done) {
             console.log('*      (1)  Voir la liste des gateaux    *');
             console.log('*      (2)  Ajouter un nouveau gateau    *');
             console.log('*      (3)  Enlever un gateau            *');
-            console.log('*      (4)  Quitter                      *');
+            console.log('*      (4)  Total de toutes les commande *');
+            console.log('*      (6)  Facture pour un client       *');
+            console.log('*      (7)  Quitter                      *');
             console.log('*----------------------------------------*');
             let action_employe = +prompt("=>");
 
@@ -101,6 +103,29 @@ pool.connect(function (err, client, done) {
                 });
             }
             else if (action_employe == 4) {
+                client.query(`SELECT
+                    (SELECT COUNT(*) FROM client) AS total_client,
+                    (SELECT SUM(contenir.quantite * gateau.prix) 
+                    FROM commande 
+                    LEFT JOIN client ON commande.id_client = client.id_client 
+                    LEFT JOIN contenir ON commande.id_commande = contenir.id_commande 
+                    LEFT JOIN gateau ON contenir.id_gateau = gateau.id_gateau) AS total_des_commandes`, (err, res) => {
+                        if (err) {
+                            console.log(err);
+                            choix(role);
+                        }
+                        else
+                        {
+                            console.log('Le nombre de client et la somme total des commandes:');
+                            console.table(res.rows);
+
+                            choix(role);
+                        }
+
+                });
+            }
+
+            else if (action_employe == 5) {
                 console.log();
                 console.log("Merci, a tres bientot");
                 client.end();
