@@ -38,7 +38,7 @@ pool.connect(function (err, client, done) {
             console.log('*      (1)  Voir la liste des gateaux    *');
             console.log('*      (2)  Ajouter un nouveau gateau    *');
             console.log('*      (3)  Enlever un gateau            *');
-            console.log('*      (4)  Total de toutes les commande *');
+            console.log('*      (4)  Total des commandes          *');
             console.log('*      (5)  Facture pour un client       *');
             console.log('*      (6)  Quitter                      *');
             console.log('*----------------------------------------*');
@@ -114,36 +114,33 @@ pool.connect(function (err, client, done) {
                             console.error(err);
                             choix(role);
                         }
-                        else
-                        {
+                        else{
                             console.log('Le nombre de client et la somme total des commandes:');
                             console.table(res.rows);
-
                             choix(role);
                         }
-
                 });
             }
             else if (action_employe == 5) {
                 let id_client = +prompt("Insérer l'id du client :");
 
                 const query = `
-                SELECT client.nom_client, client.prenom_client, gateau.nom_gateau, contenir.quantite, commande.date_commande, 
-                SUM(contenir.quantite * gateau.prix) 
-                AS totale_de_la_commande 
-                FROM commande
-                LEFT JOIN client ON commande.id_commande=client.id_client
-                LEFT JOIN contenir ON commande.id_commande=contenir.id_commande
-                LEFT JOIN gateau ON contenir.id_gateau=gateau.id_gateau 
-                WHERE client.id_client = $1
-                GROUP BY client.nom_client, 
-                client.prenom_client, 
-                gateau.nom_gateau, 
-                contenir.quantite, 
-                commande.date_commande; 
-                `;
+                     SELECT client.nom_client, client.prenom_client, gateau.nom_gateau, contenir.quantite, commande.date_commande, 
+                    SUM(contenir.quantite * gateau.prix) 
+                    AS totale_de_la_commande 
+                    FROM commande
+                    LEFT JOIN client ON commande.id_commande=client.id_client
+                    LEFT JOIN contenir ON commande.id_commande=contenir.id_commande
+                    LEFT JOIN gateau ON contenir.id_gateau=gateau.id_gateau 
+                    WHERE client.id_client = $1
+                    GROUP BY client.nom_client, 
+                    client.prenom_client, 
+                    gateau.nom_gateau, 
+                    contenir.quantite, 
+                    commande.date_commande; 
+                    `;
 
-                client.query(query, [id_client], (err, res) => {
+                    client.query(query, [id_client], (err, res) => {
                     if (err) {
                         console.log(err);
                         console.log("Erreur dans l'execution de la demande");
@@ -185,7 +182,8 @@ pool.connect(function (err, client, done) {
             console.log('*    (3)  Faire une commande                 *');
             console.log('*    (4)  Rechercher un gateau(par nom)      *');
             console.log('*    (5)  Rechercher un gateau(par type)     *');
-            console.log('*    (6)  Quitter                            *');
+            console.log('*    (6)  Rechercher son panier de commandes *');
+            console.log('*    (7)  Quitter                            *');
             console.log('*--------------------------------------------*');
             let action_client = prompt("=>");
 
@@ -285,7 +283,44 @@ pool.connect(function (err, client, done) {
                     }
                 });
             }
+
             else if (action_client == 6) {
+                let votreNom = prompt("votre nom:");
+                let votrePrenom = prompt("votre prenom:");
+
+                const query = `
+                                SELECT gateau.nom_gateau, 
+                                contenir.quantite, 
+                                gateau.prix,
+                                SUM(contenir.quantite * gateau.prix) 
+                                AS totale_de_la_commande 
+                                FROM commande
+                                LEFT JOIN client ON commande.id_commande=client.id_client
+                                LEFT JOIN contenir ON commande.id_commande=contenir.id_commande
+                                LEFT JOIN gateau ON contenir.id_gateau=gateau.id_gateau 
+                                WHERE nom_client ILIKE $1 AND prenom_client ILIKE $2
+                                GROUP BY  
+                                gateau.nom_gateau, 
+                                contenir.quantite, 
+                                gateau.prix,
+                                commande.date_commande;
+        `;
+
+
+                client.query(query, [`%${votreNom}%`,`%${votrePrenom}%`], (err, res) => {
+                    if (err) {
+                        console.log("Erreur dans votre demande");
+                        choix(role);
+                    } else {
+                        console.log("Voici votre panier : ");
+                        console.table(res.rows);
+                        console.log();
+                        choix(role);
+                    }
+                });
+            }
+
+            else if (action_client == 7) {
                 console.log();
                 console.log("Merci d'avoir utilise notre service");
                 client.end();

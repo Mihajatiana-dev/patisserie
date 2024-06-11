@@ -204,3 +204,20 @@ FROM commande
 LEFT JOIN client ON commande.id_client = client.id_client
 LEFT JOIN contenir ON commande.id_commande = contenir.id_commande
 LEFT JOIN gateau ON contenir.id_gateau = gateau.id_gateau;
+
+--voir panier---
+
+SELECT gateau.nom_gateau, contenir.quantite, gateau.prix,
+SUM(contenir.quantite * gateau.prix) 
+AS totale_de_la_commande 
+FROM commande
+LEFT JOIN client ON commande.id_commande=client.id_client
+LEFT JOIN contenir ON commande.id_commande=contenir.id_commande
+LEFT JOIN gateau ON contenir.id_gateau=gateau.id_gateau 
+WHERE nom_client ILIKE '%benja%' AND prenom_client ILIKE '%faly%'
+GROUP BY  
+gateau.nom_gateau, 
+contenir.quantite, 
+gateau.prix,
+commande.date_commande;
+ --A RECHERCHE SELON PROMPT DE C
