@@ -220,4 +220,4 @@ gateau.nom_gateau,
 contenir.quantite, 
 gateau.prix,
 commande.date_commande;
- --A RECHERCHE SELON PROMPT DE C
+ --A RECHERCHE SELON PROMPT DE Customers
