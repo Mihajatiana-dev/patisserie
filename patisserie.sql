@@ -194,8 +194,8 @@ contenir.quantite,
 commande.date_commande;
 
 
------somme chiffre d'affaire-----
-
+-----somme chiffre d'affaire et total client-----
+SELECT COUNT(*) FROM client AS total_client
 
 SELECT 
 SUM(contenir.quantite * gateau.prix) 

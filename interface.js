@@ -39,8 +39,8 @@ pool.connect(function (err, client, done) {
             console.log('*      (2)  Ajouter un nouveau gateau    *');
             console.log('*      (3)  Enlever un gateau            *');
             console.log('*      (4)  Total de toutes les commande *');
-            console.log('*      (6)  Facture pour un client       *');
-            console.log('*      (7)  Quitter                      *');
+            console.log('*      (5)  Facture pour un client       *');
+            console.log('*      (6)  Quitter                      *');
             console.log('*----------------------------------------*');
             let action_employe = +prompt("=>");
 
@@ -111,7 +111,7 @@ pool.connect(function (err, client, done) {
                     LEFT JOIN contenir ON commande.id_commande = contenir.id_commande 
                     LEFT JOIN gateau ON contenir.id_gateau = gateau.id_gateau) AS total_des_commandes`, (err, res) => {
                         if (err) {
-                            console.log(err);
+                            console.error(err);
                             choix(role);
                         }
                         else
@@ -124,8 +124,45 @@ pool.connect(function (err, client, done) {
 
                 });
             }
-
             else if (action_employe == 5) {
+                let id_client = +prompt("Insérer l'id du client :");
+
+                const query = `
+                SELECT client.nom_client, client.prenom_client, gateau.nom_gateau, contenir.quantite, commande.date_commande, 
+                SUM(contenir.quantite * gateau.prix) 
+                AS totale_de_la_commande 
+                FROM commande
+                LEFT JOIN client ON commande.id_commande=client.id_client
+                LEFT JOIN contenir ON commande.id_commande=contenir.id_commande
+                LEFT JOIN gateau ON contenir.id_gateau=gateau.id_gateau 
+                WHERE client.id_client = $1
+                GROUP BY client.nom_client, 
+                client.prenom_client, 
+                gateau.nom_gateau, 
+                contenir.quantite, 
+                commande.date_commande; 
+                `;
+
+                client.query(query, [id_client], (err, res) => {
+                    if (err) {
+                        console.log(err);
+                        console.log("Erreur dans l'execution de la demande");
+                        choix(role);
+                    } 
+                    else{
+                        const clientInfo = res.rows[0];
+                        const nomClient = clientInfo.nom_client;
+                        const prenomClient = clientInfo.prenom_client;
+                        console.log();
+                        console.log(`La facture de ${nomClient} ${prenomClient}:`);
+                        console.table(res.rows)
+                        console.log();
+                        choix(role);
+                    }
+                });
+            }
+
+            else if (action_employe == 6) {
                 console.log();
                 console.log("Merci, a tres bientot");
                 client.end();
@@ -136,6 +173,9 @@ pool.connect(function (err, client, done) {
                 choix(role);
             }
         }
+
+
+
         else if (role == 2) {
             console.log("Que souhaitez-vous faire?");
             console.log();
